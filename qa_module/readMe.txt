@@ -1,0 +1,1 @@
+PS C:\Users\acer\OneDrive\Desktop\PBL-Cloud 4th sem> python -m streamlit run app.py
