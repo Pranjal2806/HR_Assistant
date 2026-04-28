@@ -100,7 +100,7 @@ def run_video_interview():
             type="password"
         )
 
-        if st.button("Join Room"):
+        if room_id and password:
 
             rooms = load_rooms()
 
