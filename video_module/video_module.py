@@ -46,6 +46,12 @@ def run_video_interview():
     st.divider()
 
     # ==========================
+    # Initialize Session State
+    # ==========================
+    if "current_room_id" not in st.session_state:
+        st.session_state["current_room_id"] = None
+
+    # ==========================
     # HR SECTION
     # ==========================
     if role == "HR":
@@ -59,6 +65,9 @@ def run_video_interview():
             type="password"
         )
 
+        # ==========================
+        # Create Room
+        # ==========================
         if st.button("Create Room"):
 
             if room_name and room_password:
@@ -74,17 +83,49 @@ def run_video_interview():
 
                 save_rooms(rooms)
 
+                # Save room id in session
+                st.session_state["current_room_id"] = room_id
+
                 st.success("Interview room created successfully.")
 
-                st.write(f"Room ID: {room_id}")
-                st.write(f"Password: {room_password}")
+            else:
+                st.error("Please enter all details.")
+
+        # ==========================
+        # Display Room Details
+        # ==========================
+        current_room_id = st.session_state.get("current_room_id")
+
+        if current_room_id:
+
+            rooms = load_rooms()
+
+            if current_room_id in rooms:
+
+                st.write(f"Room ID: {current_room_id}")
+
+                st.write(
+                    f"Password: {rooms[current_room_id]['password']}"
+                )
 
                 st.info(
                     "Share the Room ID and Password with candidate."
                 )
 
-            else:
-                st.error("Please enter all details.")
+                st.subheader("Start Interview")
+
+                # ==========================
+                # Start HR WebRTC
+                # ==========================
+                webrtc_streamer(
+                    key=current_room_id,
+                    mode=WebRtcMode.SENDRECV,
+                    media_stream_constraints={
+                        "video": True,
+                        "audio": True
+                    },
+                    async_processing=True
+                )
 
     # ==========================
     # CANDIDATE SECTION
@@ -104,19 +145,25 @@ def run_video_interview():
 
             rooms = load_rooms()
 
+            # ==========================
             # Check Room
+            # ==========================
             if room_id in rooms:
 
                 saved_password = rooms[room_id]["password"]
 
+                # ==========================
                 # Validate Password
+                # ==========================
                 if password == saved_password:
 
                     st.success("Access granted.")
 
                     st.write(f"Connected to Room: {room_id}")
 
-                    # Start WebRTC
+                    # ==========================
+                    # Start Candidate WebRTC
+                    # ==========================
                     webrtc_streamer(
                         key=room_id,
                         mode=WebRtcMode.SENDRECV,
