@@ -3,13 +3,38 @@
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer
 import uuid
+import json
+import os
 
 
+ROOM_FILE = "rooms.json"
+
+
+# ==========================
+# Load Rooms
+# ==========================
+def load_rooms():
+
+    if not os.path.exists(ROOM_FILE):
+        return {}
+
+    with open(ROOM_FILE, "r") as f:
+        return json.load(f)
+
+
+# ==========================
+# Save Rooms
+# ==========================
+def save_rooms(data):
+
+    with open(ROOM_FILE, "w") as f:
+        json.dump(data, f)
+
+
+# ==========================
+# Main Function
+# ==========================
 def run_video_interview():
-
-    # Safe initialization
-    if "active_rooms" not in st.session_state:
-        st.session_state["active_rooms"] = {}
 
     st.title("Live Interview System")
 
@@ -21,7 +46,7 @@ def run_video_interview():
     st.divider()
 
     # ==========================
-    # HR Section
+    # HR SECTION
     # ==========================
     if role == "HR":
 
@@ -40,11 +65,14 @@ def run_video_interview():
 
                 room_id = str(uuid.uuid4())[:8]
 
-                # Save room data
-                st.session_state["active_rooms"][room_id] = {
+                rooms = load_rooms()
+
+                rooms[room_id] = {
                     "room_name": room_name,
                     "password": room_password
                 }
+
+                save_rooms(rooms)
 
                 st.success("Interview room created successfully.")
 
@@ -52,14 +80,14 @@ def run_video_interview():
                 st.write(f"Password: {room_password}")
 
                 st.info(
-                    "Share the Room ID and Password with the candidate."
+                    "Share the Room ID and Password with candidate."
                 )
 
             else:
                 st.error("Please enter all details.")
 
     # ==========================
-    # Candidate Section
+    # CANDIDATE SECTION
     # ==========================
     elif role == "Candidate":
 
@@ -74,21 +102,21 @@ def run_video_interview():
 
         if st.button("Join Room"):
 
-            active_rooms = st.session_state.get("active_rooms", {})
+            rooms = load_rooms()
 
-            # Check room existence
-            if room_id in active_rooms:
+            # Check Room
+            if room_id in rooms:
 
-                saved_password = active_rooms[room_id]["password"]
+                saved_password = rooms[room_id]["password"]
 
-                # Password validation
+                # Validate Password
                 if password == saved_password:
 
                     st.success("Access granted.")
 
                     st.write(f"Connected to Room: {room_id}")
 
-                    # Start video interview
+                    # Start WebRTC
                     webrtc_streamer(
                         key=room_id,
                         media_stream_constraints={
