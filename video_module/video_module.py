@@ -5,9 +5,9 @@ from streamlit_webrtc import webrtc_streamer
 import uuid
 
 
-# Store active rooms temporarily
+# Initialize room storage safely
 if "active_rooms" not in st.session_state:
-    st.session_state.active_rooms = {}
+    st.session_state["active_rooms"] = {}
 
 
 def run_video_interview():
@@ -41,8 +41,8 @@ def run_video_interview():
 
                 room_id = str(uuid.uuid4())[:8]
 
-                # Save room information
-                st.session_state.active_rooms[room_id] = {
+                # Save room information safely
+                st.session_state["active_rooms"][room_id] = {
                     "room_name": room_name,
                     "password": room_password
                 }
@@ -76,9 +76,9 @@ def run_video_interview():
         if st.button("Join Room"):
 
             # Check whether room exists
-            if room_id in st.session_state.active_rooms:
+            if room_id in st.session_state["active_rooms"]:
 
-                saved_password = st.session_state.active_rooms[room_id]["password"]
+                saved_password = st.session_state["active_rooms"][room_id]["password"]
 
                 # Validate password
                 if password == saved_password:
