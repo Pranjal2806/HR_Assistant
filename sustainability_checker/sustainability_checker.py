@@ -117,9 +117,9 @@ def run_sustainability_checker():
 
                 score = predict_sustainability_score(resume_text, selected_category)
 
-                if score >= 75:
+                if score >= 50:
                     feedback = "✅ Strong Resume!"
-                elif score >= 50:
+                elif score >= 30:
                     feedback = "⚠️ Moderate – can be improved."
                 else:
                     feedback = "❌ Needs significant improvement."
