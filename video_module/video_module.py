@@ -1,7 +1,7 @@
 # video_module.py
 
 import streamlit as st
-from streamlit_webrtc import webrtc_streamer
+from streamlit_webrtc import webrtc_streamer, WebRtcMode
 import uuid
 import json
 import os
@@ -119,10 +119,12 @@ def run_video_interview():
                     # Start WebRTC
                     webrtc_streamer(
                         key=room_id,
+                        mode=WebRtcMode.SENDRECV,
                         media_stream_constraints={
                             "video": True,
                             "audio": True
-                        }
+                        },
+                        async_processing=True
                     )
 
                 else:
