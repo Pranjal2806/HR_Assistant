@@ -6,6 +6,7 @@ import streamlit as st
 from resume_classifier.resume_classifier import run_resume_classifier
 from sustainability_checker.sustainability_checker import run_sustainability_checker
 from qa_module.qa_module import run_qa_module
+from video_module.video_module import run_video_interview
 
 # ========== Set Page Config ==========
 st.set_page_config(page_title="Resume Intelligence Suite", page_icon="🧠", layout="wide")
@@ -16,7 +17,12 @@ st.markdown("Select a module from the sidebar to get started.")
 # ========== Sidebar for Module Selection ==========
 module = st.sidebar.radio(
     "Select Module:",
-    ("Resume Classifier", "Sustainability Checker", "Q&A Generator")
+    (
+        "Resume Classifier",
+        "Sustainability Checker",
+        "Q&A Generator",
+        "Video Interview"
+    )
 )
 
 # ========== Render Selected Module ==========
@@ -28,3 +34,5 @@ elif module == "Sustainability Checker":
 
 elif module == "Q&A Generator":
     run_qa_module()
+elif module == "Video Interview":
+    run_video_interview()
