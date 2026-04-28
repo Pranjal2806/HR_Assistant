@@ -5,12 +5,11 @@ from streamlit_webrtc import webrtc_streamer
 import uuid
 
 
-# Initialize room storage safely
-if "active_rooms" not in st.session_state:
-    st.session_state["active_rooms"] = {}
-
-
 def run_video_interview():
+
+    # Safe initialization
+    if "active_rooms" not in st.session_state:
+        st.session_state["active_rooms"] = {}
 
     st.title("Live Interview System")
 
@@ -41,7 +40,7 @@ def run_video_interview():
 
                 room_id = str(uuid.uuid4())[:8]
 
-                # Save room information safely
+                # Save room data
                 st.session_state["active_rooms"][room_id] = {
                     "room_name": room_name,
                     "password": room_password
@@ -75,19 +74,21 @@ def run_video_interview():
 
         if st.button("Join Room"):
 
-            # Check whether room exists
-            if room_id in st.session_state["active_rooms"]:
+            active_rooms = st.session_state.get("active_rooms", {})
 
-                saved_password = st.session_state["active_rooms"][room_id]["password"]
+            # Check room existence
+            if room_id in active_rooms:
 
-                # Validate password
+                saved_password = active_rooms[room_id]["password"]
+
+                # Password validation
                 if password == saved_password:
 
                     st.success("Access granted.")
 
                     st.write(f"Connected to Room: {room_id}")
 
-                    # Start video call
+                    # Start video interview
                     webrtc_streamer(
                         key=room_id,
                         media_stream_constraints={
